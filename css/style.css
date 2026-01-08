@@ -92,3 +92,20 @@ tbody::-webkit-scrollbar-thumb {
         transform: translateY(12px);
     }
 }
+
+/* Mobile-friendly toast positioning */
+@media (max-width: 640px) {
+    #toast-container {
+        top: 1rem;
+        bottom: auto;
+        right: 50%;
+        left: auto;
+        transform: translateX(50%);
+        align-items: center;
+    }
+
+    .toast {
+        min-width: 90vw;
+        text-align: center;
+    }
+}
