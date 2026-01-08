@@ -89,26 +89,33 @@ function renderTodos() {
         const textDecoration = todo.completed ? "line-through text-gray-500" : "text-white";
 
         row.innerHTML = `
-            <td class="p-4 ${textDecoration}">${todo.task}</td>
-            <td class="p-4">${todo.date}</td>
-            <td class="p-4">
+            <td class="p-4 md:table-cell block" data-label="Task">
+                <span class="${textDecoration} block">${todo.task}</span>
+            </td>
+            <td class="p-4 md:table-cell block" data-label="Due Date">
+                ${todo.date}
+            </td>
+            <td class="p-4 md:table-cell block" data-label="Status">
                 <span class="px-2 py-1 rounded text-xs border ${statusClass}">
                     ${statusText}
                 </span>
             </td>
-            <td class="p-4 text-center flex justify-center gap-2">
-                <button onclick="toggleStatus('${todo.id}')" class="cursor-pointer text-green-400 hover:text-green-300 transition" title="Mark as Done/Undone">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-                <button onclick="deleteTodo('${todo.id}')" class="cursor-pointer text-red-400 hover:text-red-300 transition" title="Delete">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                </button>
+            <td class="p-4 md:table-cell block md:text-center" data-label="Actions">
+                <div class="flex gap-3 md:justify-center">
+                    <button onclick="toggleStatus('${todo.id}')" class="cursor-pointer text-green-400 hover:text-green-300 transition p-2" title="Mark as Done/Undone">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button onclick="deleteTodo('${todo.id}')" class="cursor-pointer text-red-400 hover:text-red-300 transition p-2" title="Delete">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
             </td>
         `;
+
         todosBody.appendChild(row);
     });
 }
