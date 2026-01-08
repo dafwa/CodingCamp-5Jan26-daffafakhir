@@ -109,3 +109,13 @@ tbody::-webkit-scrollbar-thumb {
         text-align: center;
     }
 }
+
+/* Drag-and-drop styles */
+tr.dragging {
+    opacity: 0.4;
+}
+
+tr.drag-over {
+    outline: 2px dashed #6366f1;
+    outline-offset: -4px;
+}

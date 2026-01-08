@@ -14,6 +14,7 @@ const modalActions = document.getElementById("modal-actions");
 // --- State Management ---
 let todos = JSON.parse(localStorage.getItem("todos")) || [];
 let filterStatus = "all"; // Options: 'all', 'completed', 'pending'
+let draggedTodoId = null;
 
 // --- Event Listeners ---
 addBtn.addEventListener("click", addTodo);
@@ -85,7 +86,11 @@ function renderTodos() {
     // Generate HTML for each todo
     filteredTodos.forEach((todo) => {
         const row = document.createElement("tr");
+        row.setAttribute("draggable", "true");
+        row.dataset.id = todo.id;
+
         row.className = "hover:bg-slate-800 transition duration-150";
+        row.style.cursor = "grab";
 
         // Status Colors
         const statusClass = todo.completed
@@ -121,6 +126,11 @@ function renderTodos() {
                 </div>
             </td>
         `;
+
+        row.addEventListener("dragstart", handleDragStart);
+        row.addEventListener("dragover", handleDragOver);
+        row.addEventListener("drop", handleDrop);
+        row.addEventListener("dragend", handleDragEnd);
 
         todosBody.appendChild(row);
     });
@@ -275,4 +285,46 @@ function showToast(message, type = "success") {
     setTimeout(() => {
         toast.remove();
     }, 3000);
+}
+
+// Drag Handlers
+function handleDragStart(e) {
+    draggedTodoId = this.dataset.id;
+    this.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    this.classList.add("drag-over");
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    this.classList.remove("drag-over");
+
+    const targetId = this.dataset.id;
+    if (draggedTodoId === targetId) return;
+
+    reorderTodos(draggedTodoId, targetId);
+}
+
+function handleDragEnd() {
+    this.classList.remove("dragging");
+    document.querySelectorAll(".drag-over").forEach((el) => el.classList.remove("drag-over"));
+}
+
+function reorderTodos(sourceId, targetId) {
+    const sourceIndex = todos.findIndex((t) => t.id === sourceId);
+    const targetIndex = todos.findIndex((t) => t.id === targetId);
+
+    if (sourceIndex === -1 || targetIndex === -1) return;
+
+    const [movedTodo] = todos.splice(sourceIndex, 1);
+    todos.splice(targetIndex, 0, movedTodo);
+
+    saveToLocalStorage();
+    renderTodos();
+
+    showToast("Task order updated", "info");
 }
