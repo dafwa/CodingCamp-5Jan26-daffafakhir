@@ -59,6 +59,8 @@ function addTodo() {
     // Clear Inputs
     taskInput.value = "";
     dateInput.value = "";
+
+    showToast("Task added successfully");
 }
 
 function renderTodos() {
@@ -134,6 +136,8 @@ function deleteTodo(id) {
         todos = todos.filter((todo) => todo.id !== id);
         saveToLocalStorage();
         renderTodos();
+
+        showToast("Task deleted");
     });
 }
 
@@ -147,6 +151,8 @@ function deleteAllTodos() {
         todos = [];
         saveToLocalStorage();
         renderTodos();
+
+        showToast("All tasks deleted", "error");
     });
 }
 
@@ -156,6 +162,8 @@ function toggleStatus(id) {
         todo.completed = !todo.completed;
         saveToLocalStorage();
         renderTodos();
+
+        showToast(todo.completed ? "Task marked as completed" : "Task marked as pending", "info");
     }
 }
 
@@ -189,7 +197,7 @@ function formatDate(dateString) {
     return date.toLocaleDateString();
 }
 
-// Modal
+// Modal Helper
 function showModal({ title, message, type = "alert" }) {
     return new Promise((resolve) => {
         modalTitle.textContent = title;
@@ -241,4 +249,30 @@ function showAlert(message) {
         message,
         type: "alert",
     });
+}
+
+// Toast Helper
+const toastContainer = document.getElementById("toast-container");
+
+function showToast(message, type = "success") {
+    const toast = document.createElement("div");
+
+    const styles = {
+        success: "bg-green-500/10 text-green-400 border-green-400/20",
+        error: "bg-red-500/10 text-red-400 border-red-400/20",
+        info: "bg-indigo-500/10 text-indigo-400 border-indigo-400/20",
+    };
+
+    toast.className = `
+        toast pointer-events-auto
+        border rounded-lg px-4 py-3 text-sm shadow-lg
+        ${styles[type] || styles.success}
+    `;
+
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 }
