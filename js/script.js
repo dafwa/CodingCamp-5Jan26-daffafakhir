@@ -6,6 +6,10 @@ const filterBtn = document.getElementById("filter-btn");
 const deleteAllBtn = document.getElementById("delete-all-btn");
 const todosBody = document.getElementById("todos-body");
 const emptyMsg = document.getElementById("empty-msg");
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modal-title");
+const modalMessage = document.getElementById("modal-message");
+const modalActions = document.getElementById("modal-actions");
 
 // --- State Management ---
 let todos = JSON.parse(localStorage.getItem("todos")) || [];
@@ -121,17 +125,29 @@ function renderTodos() {
 }
 
 function deleteTodo(id) {
-    todos = todos.filter((todo) => todo.id !== id);
-    saveToLocalStorage();
-    renderTodos();
+    showModal({
+        title: "Delete Task",
+        message: "This task will be permanently removed.",
+        type: "confirm",
+    }).then((confirmed) => {
+        if (!confirmed) return;
+        todos = todos.filter((todo) => todo.id !== id);
+        saveToLocalStorage();
+        renderTodos();
+    });
 }
 
 function deleteAllTodos() {
-    if (confirm("Are you sure you want to delete all tasks?")) {
+    showModal({
+        title: "Delete All Tasks",
+        message: "Are you sure you want to delete all tasks?",
+        type: "confirm",
+    }).then((confirmed) => {
+        if (!confirmed) return;
         todos = [];
         saveToLocalStorage();
         renderTodos();
-    }
+    });
 }
 
 function toggleStatus(id) {
@@ -173,7 +189,56 @@ function formatDate(dateString) {
     return date.toLocaleDateString();
 }
 
-// Helper: Simple Alert (can be replaced with a modal)
+// Modal
+function showModal({ title, message, type = "alert" }) {
+    return new Promise((resolve) => {
+        modalTitle.textContent = title;
+        modalMessage.textContent = message;
+        modalActions.innerHTML = "";
+
+        if (type === "confirm") {
+            const cancelBtn = document.createElement("button");
+            cancelBtn.textContent = "Cancel";
+            cancelBtn.className =
+                "cursor-pointer bg-slate-600 hover:bg-slate-500 text-white px-4 py-2 rounded-lg transition";
+
+            const confirmBtn = document.createElement("button");
+            confirmBtn.textContent = "Confirm";
+            confirmBtn.className =
+                "cursor-pointer bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition";
+
+            cancelBtn.onclick = () => close(false);
+            confirmBtn.onclick = () => close(true);
+
+            modalActions.append(cancelBtn, confirmBtn);
+        } else {
+            const okBtn = document.createElement("button");
+            okBtn.textContent = "OK";
+            okBtn.className =
+                "cursor-pointer bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded-lg transition";
+            okBtn.onclick = () => close(true);
+            modalActions.appendChild(okBtn);
+        }
+
+        function close(result) {
+            modal.classList.add("hidden");
+            modal.classList.remove("show");
+            resolve(result);
+        }
+
+        modal.classList.remove("hidden");
+        modal.classList.add("show");
+
+        modal.onclick = (e) => {
+            if (e.target === modal) close(false);
+        };
+    });
+}
+
 function showAlert(message) {
-    alert(message);
+    return showModal({
+        title: "Required",
+        message,
+        type: "alert",
+    });
 }
